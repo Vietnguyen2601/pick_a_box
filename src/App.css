@@ -1,22 +1,4 @@
 /* App.css */
-@keyframes bulbFlash {
-  0%, 100% {
-    box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
-    border-color: #ff0000;
-  }
-  25% {
-    box-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
-    border-color: #00ff00;
-  }
-  50% {
-    box-shadow: 0 0 20px #ffff00, 0 0 40px #ffff00;
-    border-color: #ffff00;
-  }
-  75% {
-    box-shadow: 0 0 20px #0000ff, 0 0 40px #0000ff;
-    border-color: #0000ff;
-  }
-}
 
 @keyframes flipIn {
   0% {
@@ -55,7 +37,6 @@
   border: 6px solid #333;
   border-radius: 20px;
   margin: 10px;
-  animation: bulbFlash 1.5s infinite;
   box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
   overflow: hidden;
 }
@@ -68,13 +49,13 @@
   right: 0;
   bottom: 0;
   background-image: 
-    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50%" font-size="20" fill="%23ffffff" opacity="0.3">❄</text></svg>'),
-    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50%" font-size="15" fill="%23ffff00" opacity="0.2">⭐</text></svg>');
-  background-size: 60px 60px, 80px 80px;
-  background-position: 0 0, 40px 40px;
-  opacity: 0.5;
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50%" font-size="20" fill="%23ffffff" opacity="0.2">❄</text><text y="60%" font-size="18" fill="%23ff0000" opacity="0.15">🎄</text><text y="70%" font-size="16" fill="%23ffd700" opacity="0.15">⭐</text></svg>');
+  background-size: 120px 120px;
+  background-position: 0 0;
+  opacity: 0.6;
   pointer-events: none;
   z-index: -1;
+  animation: drift 30s linear infinite;
 }
 
 .app::after {
@@ -85,25 +66,12 @@
   right: 0;
   bottom: 0;
   background-image: 
-    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><circle cx="25" cy="10" r="3" fill="%23ff0000"/><circle cx="15" cy="20" r="2" fill="%23ffff00"/><circle cx="35" cy="20" r="2" fill="%230000ff"/></svg>');
-  background-size: 100px 100px;
-  background-position: 20px 20px;
-  opacity: 0.15;
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="40%" font-size="20" fill="%23ff6b6b" opacity="0.15">🎅</text><text y="60%" font-size="18" fill="%23ff0000" opacity="0.15">🎁</text><text y="80%" font-size="16" fill="%23228b22" opacity="0.15">🎄</text></svg>');
+  background-size: 150px 150px;
+  background-position: 50px 20px;
+  opacity: 0.7;
   pointer-events: none;
-  animation: drift 20s linear infinite;
-}
-
-.app::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50%" font-size="20" fill="%23ff0000">❄</text></svg>');
-  background-size: 50px 50px;
-  opacity: 0.1;
-  pointer-events: none;
+  animation: drift 35s linear infinite reverse;
 }
 
 h1 {
@@ -135,51 +103,69 @@ h1 {
   margin-left: auto;
   margin-right: auto;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
 
 .box {
   width: 110px;
   height: 110px;
-  background: linear-gradient(45deg, #ff5722, #ff9800);
-  border: 4px solid #d32f2f;
-  border-radius: 10px;
+  background: linear-gradient(45deg, #ff9800, #ff6f00);
+  border: 3px solid #e65100;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6em;
+  font-size: 1.8em;
   font-weight: bold;
   color: white;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 10px rgba(255, 87, 34, 0.5);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 10px rgba(255, 152, 0, 0.5);
   animation: flipIn 0.6s ease-out;
   perspective: 1000px;
 }
 
 .box:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3), 0 0 20px rgba(255, 87, 34, 0.8);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3), 0 0 20px rgba(255, 152, 0, 0.8);
 }
 
 .box.opened {
-  background: linear-gradient(45deg, #4caf50, #8bc34a);
+  background: linear-gradient(135deg, #228b22 0%, #32cd32 50%, #00cc00 100%);
   cursor: not-allowed;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 10px rgba(76, 175, 80, 0.5);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 15px rgba(50, 205, 50, 0.6);
   animation: shake 0.3s ease-in-out;
+  border-color: #0d6b0d;
+  color: #fff;
 }
 
 .box.correct-box {
-  background: linear-gradient(45deg, #4caf50, #8bc34a);
-  color: white;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 20px rgba(76, 175, 80, 0.8);
+  background: linear-gradient(135deg, #228b22 0%, #32cd32 50%, #00cc00 100%);
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 25px rgba(50, 205, 50, 0.8);
+  border-color: #0d6b0d;
 }
 
 .box.wrong-box {
-  background: linear-gradient(45deg, #f44336, #e91e63);
+  background: linear-gradient(135deg, #d32f2f 0%, #ff6f6f 50%, #ff9999 100%);
   color: white;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 20px rgba(244, 67, 54, 0.8);
+  border-color: #b71c1c;
+}
+
+.box.minus {
+  background: linear-gradient(135deg, #d32f2f 0%, #ff6f6f 50%, #ff9999 100%);
+  color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 20px rgba(244, 67, 54, 0.8);
+  border-color: #b71c1c;
+}
+
+.box.bomb {
+  background: linear-gradient(135deg, #ffd54f 0%, #ffed4e 50%, #ffb300 100%);
+  color: #333;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 20px rgba(255, 193, 7, 0.8);
+  border-color: #cc8800;
 }
 
 .box.selected {
@@ -241,4 +227,154 @@ h1 {
 
 .reset:hover {
   background: #d32f2f;
+}
+
+/* Modal CSS */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #d32f2f;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.modal-close:hover {
+  background: #ffebee;
+  color: #b71c1c;
+  transform: scale(1.2);
+}
+
+.modal-header h2 {
+  color: #1976d2;
+  margin: 0;
+  flex: 1;
+  font-size: 1.3em;
+}
+
+.timer {
+  background: #ff9800;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1.2em;
+  white-space: nowrap;
+  margin-left: 20px;
+}
+
+.modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-button {
+  background: #e3f2fd;
+  border: 2px solid #2196f3;
+  color: #1976d2;
+  padding: 12px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  text-align: left;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.modal-button:hover:not(:disabled) {
+  background: #2196f3;
+  color: white;
+  transform: translateX(5px);
+}
+
+.modal-button:disabled {
+  cursor: not-allowed;
+}
+
+.modal-button.selected-answer {
+  background: #2196f3;
+  color: white;
+  border-color: #1976d2;
+}
+
+.modal-button.correct-answer {
+  background: #4caf50;
+  color: white;
+  border-color: #388e3c;
+}
+
+.modal-button.wrong-answer {
+  background: #f44336;
+  color: white;
+  border-color: #d32f2f;
+}
+
+.result-message {
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.correct-msg {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.wrong-msg {
+  background: #ffcdd2;
+  color: #c62828;
 }

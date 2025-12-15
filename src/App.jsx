@@ -165,10 +165,49 @@ const questions = [
     ],
     answer: "A",
   },
+  {
+    question:
+      "Theo V.I. Lênin, hình thức tổ chức độc quyền nào thống nhất cả sản xuất và lưu thông dưới sự quản lý của một hội đồng quản trị chung?",
+    options: ["A. Cartel", "B. Syndicate", "C. Trust", "D. Consortium"],
+    answer: "C",
+  },
+  {
+    question:
+      "Đặc điểm nào sau đây phân biệt xuất khẩu tư bản với xuất khẩu hàng hóa trong giai đoạn chủ nghĩa tư bản độc quyền?",
+    options: [
+      "A. Xuất khẩu tư bản chỉ diễn ra giữa các nước đang phát triển.",
+      "B. Xuất khẩu tư bản nhằm chiếm đoạt giá trị thặng dư và lợi nhuận ở nước nhập khẩu.",
+      "C. Xuất khẩu tư bản không liên quan đến đầu tư dài hạn.",
+      "D. Xuất khẩu tư bản chỉ do nhà nước trực tiếp thực hiện.",
+    ],
+    answer: "B",
+  },
+  {
+    question:
+      "Thực chất của việc phân chia thị trường thế giới giữa các tập đoàn độc quyền là phân chia những yếu tố nào?",
+    options: [
+      "A. Dân số và lãnh thổ chính trị.",
+      "B. Văn hóa và hệ tư tưởng.",
+      "C. Thị trường tiêu thụ, nguồn nguyên liệu và lĩnh vực đầu tư.",
+      "D. Trình độ khoa học – công nghệ giữa các quốc gia.",
+    ],
+    answer: "C",
+  },
+  {
+    question:
+      "Theo Lênin, vì sao các tổ chức độc quyền có xu hướng lôi kéo chính phủ tham gia vào việc phân định khu vực ảnh hưởng?",
+    options: [
+      "A. Để bảo vệ lợi ích kinh tế và nguồn nguyên liệu của tư bản độc quyền.",
+      "B. Để thúc đẩy dân chủ hóa quan hệ quốc tế.",
+      "C. Để xóa bỏ hoàn toàn cạnh tranh giữa các quốc gia.",
+      "D. Để giảm chi tiêu quân sự của nhà nước.",
+    ],
+    answer: "A",
+  },
 ];
 
 const boxTypes = [
-  // 10 ô điểm (tương ứng 10 câu hỏi)
+  // 14 ô điểm (tương ứng 14 câu hỏi)
   { type: "point", value: 100 },
   { type: "point", value: 200 },
   { type: "point", value: 500 },
@@ -177,13 +216,18 @@ const boxTypes = [
   { type: "point", value: 500 },
   { type: "point", value: 100 },
   { type: "point", value: 200 },
+  { type: "point", value: 500 },
+  { type: "point", value: 100 },
   { type: "point", value: 200 },
   { type: "point", value: 100 },
+  { type: "point", value: 500 },
+  { type: "point", value: 200 },
   // 3 ô trừ điểm
   { type: "minus", value: 100 },
   { type: "minus", value: 200 },
   { type: "minus", value: 300 },
-  // 2 ô ném bom
+  // 3 ô ném bom
+  { type: "bomb", value: 150 },
   { type: "bomb", value: 150 },
   { type: "bomb", value: 150 },
 ];
@@ -197,10 +241,22 @@ function App() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [answerResult, setAnswerResult] = useState(null);
   const [boxResult, setBoxResult] = useState({}); // Lưu trạng thái đúng/sai của mỗi ô
+  const [timeLeft, setTimeLeft] = useState(20); // Đếm ngược thời gian
+  const [showModal, setShowModal] = useState(false); // Hiển thị modal câu hỏi
+  const [selectedAnswer, setSelectedAnswer] = useState(null); // Đáp án được chọn
+  const [hasSubmitted, setHasSubmitted] = useState(false); // Đã submit đáp án chưa
 
   useEffect(() => {
     initializeGame();
   }, []);
+
+  // Đếm ngược thời gian
+  useEffect(() => {
+    if (showModal && timeLeft > 0 && !hasSubmitted) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal, timeLeft, hasSubmitted]);
 
   const initializeGame = () => {
     const shuffledBoxes = [...boxTypes].sort(() => Math.random() - 0.5);
@@ -221,6 +277,36 @@ function App() {
     setSelectedBox(null);
     setShowAnswer(false);
     setAnswerResult(null);
+    setBoxResult({});
+    setTimeLeft(20);
+    setShowModal(false);
+    setSelectedAnswer(null);
+    setHasSubmitted(false);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setCurrentQuestion(null);
+    setSelectedBox(null);
+    setSelectedAnswer(null);
+    setTimeLeft(20);
+    setHasSubmitted(false);
+
+    // Đóng hộp sau khi đóng modal
+    if (selectedBox) {
+      setBoxes((prev) =>
+        prev.map((b) => (b.id === selectedBox.id ? { ...b, opened: true } : b))
+      );
+
+      // Kiểm tra game over
+      setTimeout(() => {
+        if (
+          boxes.filter((b) => b.id !== selectedBox.id && !b.opened).length === 0
+        ) {
+          setGameOver(true);
+        }
+      }, 100);
+    }
   };
 
   const selectBox = (box) => {
@@ -232,8 +318,11 @@ function App() {
     if (box.type !== "point") {
       applyEffect(box);
     } else {
-      // Nếu là ô điểm, hiển thị câu hỏi
+      // Nếu là ô điểm, hiển thị modal câu hỏi
       setCurrentQuestion(box.question);
+      setShowModal(true);
+      setTimeLeft(20);
+      setSelectedAnswer(null);
     }
   };
 
@@ -241,9 +330,13 @@ function App() {
     if (box.type === "minus") {
       setScore((prev) => Math.max(0, prev - box.value));
       playSound("wrong"); // Âm thanh khi trừ điểm
+      // Lưu trạng thái trừ điểm
+      setBoxResult((prev) => ({ ...prev, [box.id]: "minus" }));
     } else if (box.type === "bomb") {
       setScore((prev) => Math.max(0, prev - box.value));
       playSound("bomb"); // Âm thanh ném bom
+      // Lưu trạng thái bom
+      setBoxResult((prev) => ({ ...prev, [box.id]: "bomb" }));
     }
 
     // Đóng hộp ngay lập tức
@@ -261,51 +354,40 @@ function App() {
   };
 
   const submitAnswer = (selectedOption) => {
+    setSelectedAnswer(selectedOption);
+    setHasSubmitted(true); // Đánh dấu đã submit
     const isCorrect = selectedOption === currentQuestion.answer;
-    setAnswerResult(isCorrect);
-    setShowAnswer(true);
 
     // Phát âm thanh tùy theo đúng hay sai
     playSound(isCorrect ? "correct" : "wrong");
 
-    setTimeout(() => {
-      if (isCorrect && selectedBox.type === "point") {
-        setScore((prev) => prev + selectedBox.value);
-        // Lưu trạng thái đúng cho ô
-        setBoxResult((prev) => ({ ...prev, [selectedBox.id]: "correct" }));
-      } else if (!isCorrect && selectedBox.type === "point") {
-        // Lưu trạng thái sai cho ô
-        setBoxResult((prev) => ({ ...prev, [selectedBox.id]: "wrong" }));
-      }
-      // Đóng hộp
-      setBoxes((prev) =>
-        prev.map((b) => (b.id === selectedBox.id ? { ...b, opened: true } : b))
-      );
-      setCurrentQuestion(null);
-      setSelectedBox(null);
-      setShowAnswer(false);
-      setAnswerResult(null);
-
-      // Kiểm tra game over nếu tất cả hộp đã mở
-      if (boxes.filter((b) => !b.opened).length === 1) {
-        setGameOver(true);
-      }
-    }, 2000);
+    // Hiển thị đáp án được chọn
+    if (isCorrect) {
+      setScore((prev) => prev + selectedBox.value);
+      // Lưu trạng thái đúng cho ô
+      setBoxResult((prev) => ({ ...prev, [selectedBox.id]: "correct" }));
+    } else {
+      // Lưu trạng thái sai cho ô
+      setBoxResult((prev) => ({ ...prev, [selectedBox.id]: "wrong" }));
+    }
   };
 
   return (
     <div className="app">
       <h1>🎄 Pick-a-Box Game 🎄</h1>
       <div className="boxes">
-        {boxes.map((box) => (
+        {boxes.map((box, index) => (
           <div
             key={box.id}
             className={`box ${box.opened ? "opened" : ""} ${
               selectedBox && selectedBox.id === box.id ? "selected" : ""
             } ${boxResult[box.id] === "correct" ? "correct-box" : ""} ${
               boxResult[box.id] === "wrong" ? "wrong-box" : ""
+            } ${boxResult[box.id] === "minus" ? "minus" : ""} ${
+              boxResult[box.id] === "bomb" ? "bomb" : ""
             }`}
             onClick={() => selectBox(box)}
+            title={`Ô số ${box.id + 1}`}
           >
             {box.opened
               ? box.type === "point"
@@ -313,27 +395,61 @@ function App() {
                 : box.type === "minus"
                 ? `−${box.value}`
                 : `💣${box.value}`
-              : "?"}
+              : box.id + 1}
           </div>
         ))}
       </div>
-      {currentQuestion && !showAnswer && (
-        <div className="question">
-          <h2>{currentQuestion.question}</h2>
-          <div className="options">
-            {currentQuestion.options.map((option) => (
-              <button key={option[0]} onClick={() => submitAnswer(option[0])}>
-                {option}
+
+      {/* Modal câu hỏi */}
+      {showModal && currentQuestion && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>{currentQuestion.question}</h2>
+              <div className="timer">⏱️ {timeLeft}s</div>
+              <button className="modal-close" onClick={closeModal}>
+                ✕
               </button>
-            ))}
+            </div>
+            <div className="modal-options">
+              {currentQuestion.options.map((option) => (
+                <button
+                  key={option[0]}
+                  className={`modal-button ${
+                    selectedAnswer && option[0] === currentQuestion.answer
+                      ? "correct-answer"
+                      : ""
+                  } ${
+                    selectedAnswer &&
+                    option[0] === selectedAnswer &&
+                    selectedAnswer !== currentQuestion.answer
+                      ? "wrong-answer"
+                      : ""
+                  }`}
+                  onClick={() => submitAnswer(option[0])}
+                  disabled={hasSubmitted}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+            {selectedAnswer && (
+              <div className="result-message">
+                {selectedAnswer === currentQuestion.answer ? (
+                  <div className="correct-msg">
+                    ✅ Đúng! +{selectedBox.value} điểm
+                  </div>
+                ) : (
+                  <div className="wrong-msg">
+                    ❌ Sai! Đáp án đúng là {currentQuestion.answer}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
-      {showAnswer && (
-        <div className="answer-result">
-          {answerResult ? "Đúng! 🎉" : "Sai rồi! 😞"}
-        </div>
-      )}
+
       <button onClick={initializeGame} className="reset">
         Chơi lại
       </button>
