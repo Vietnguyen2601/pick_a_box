@@ -177,7 +177,7 @@ const boxTypes = [
   { type: "point", value: 500 },
   { type: "point", value: 100 },
   { type: "point", value: 200 },
-  { type: "point", value: 500 },
+  { type: "point", value: 200 },
   { type: "point", value: 100 },
   // 3 ô trừ điểm
   { type: "minus", value: 100 },
@@ -196,6 +196,7 @@ function App() {
   const [selectedBox, setSelectedBox] = useState(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [answerResult, setAnswerResult] = useState(null);
+  const [boxResult, setBoxResult] = useState({}); // Lưu trạng thái đúng/sai của mỗi ô
 
   useEffect(() => {
     initializeGame();
@@ -270,6 +271,11 @@ function App() {
     setTimeout(() => {
       if (isCorrect && selectedBox.type === "point") {
         setScore((prev) => prev + selectedBox.value);
+        // Lưu trạng thái đúng cho ô
+        setBoxResult((prev) => ({ ...prev, [selectedBox.id]: "correct" }));
+      } else if (!isCorrect && selectedBox.type === "point") {
+        // Lưu trạng thái sai cho ô
+        setBoxResult((prev) => ({ ...prev, [selectedBox.id]: "wrong" }));
       }
       // Đóng hộp
       setBoxes((prev) =>
@@ -296,6 +302,8 @@ function App() {
             key={box.id}
             className={`box ${box.opened ? "opened" : ""} ${
               selectedBox && selectedBox.id === box.id ? "selected" : ""
+            } ${boxResult[box.id] === "correct" ? "correct-box" : ""} ${
+              boxResult[box.id] === "wrong" ? "wrong-box" : ""
             }`}
             onClick={() => selectBox(box)}
           >
@@ -323,7 +331,7 @@ function App() {
       )}
       {showAnswer && (
         <div className="answer-result">
-          {answerResult ? "Đúng! 🎉" : "Sai! 😞"}
+          {answerResult ? "Đúng! 🎉" : "Sai rồi! 😞"}
         </div>
       )}
       <button onClick={initializeGame} className="reset">
