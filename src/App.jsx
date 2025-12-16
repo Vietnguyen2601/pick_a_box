@@ -225,11 +225,11 @@ const boxTypes = [
   // 3 ô trừ điểm
   { type: "minus", value: 100 },
   { type: "minus", value: 200 },
-  { type: "minus", value: 300 },
+  { type: "minus", value: 100 },
   // 3 ô ném bom
-  { type: "bomb", value: 150 },
-  { type: "bomb", value: 150 },
-  { type: "bomb", value: 150 },
+  { type: "bomb", value: 100 },
+  { type: "bomb", value: 100 },
+  { type: "bomb", value: 100 },
 ];
 
 function App() {
